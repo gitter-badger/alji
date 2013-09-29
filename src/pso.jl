@@ -16,7 +16,7 @@ type Particle{T}
   fitness::Float64
   p_position::Vector{T} # previous best position
   p_fitness::Float64
-  l_postion::Vector{T} # local best position
+  l_position::Vector{T} # local best position
   l_fitness::Float64
   velocity::Vector{T}
   neighbors::Vector{T}
@@ -32,7 +32,3 @@ function Particle{T}(limits::Array{T})
   Particle{Float64}(position, fitness, position, fitness, position, fitness,
                               velocity, neighbors)
 end
-
-limits = [[0:10:100] [10:10:110]]
-p = Particle(limits)
-print(p)
