@@ -1,6 +1,6 @@
 module Alji
 
-export Particle
+export pso
 
 # PSO
 include("pso.jl")
