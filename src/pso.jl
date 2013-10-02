@@ -76,7 +76,7 @@ function evaluate(particle::Particle, fitness::Function)
   end
 end
 
-function pso(limits, fitness::Function, itermax = 100, n_particles = 40, K = 3)
+function pso(limits::Array, fitness::Function, itermax = 100, n_particles = 40, K = 3)
 
   particles = [Particle(limits) for i=1:n_particles]
   best_particle = particles[1]
@@ -123,4 +123,9 @@ function pso(limits, fitness::Function, itermax = 100, n_particles = 40, K = 3)
 
   end
   best_particle.p_position
+end
+
+function pso(n::Real, fitness::Function, itermax = 100, n_particles = 40, K = 3)
+  limits = [[realmin(Float64) for i=1:n] [realmax(Float64) for i=1:n]]
+  pso(limits, fitness, itermax, n_particles, K)
 end
