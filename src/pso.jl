@@ -8,6 +8,9 @@
 #
 # Copyright Dennis Wilson 2013, under the GPL (see alji for version)
 
+const w = 1/(2log(2))
+const c = 1/2 + log(2)
+
 type Particle
   position::Vector{Float64} # current position
   fitness::Float64
@@ -27,9 +30,30 @@ function Particle(limits)
   Particle(position, fitness, position, fitness, position, fitness, velocity)
 end
 
-function update(particle::Particle, limits)
-  # temporary, will be expanded later
-  particle.position = limits[:,1] + rand(size(limits, 1)) .* (limits[:,2] - limits[:,1])
+function update(p::Particle, limits)
+
+  # set gravity point
+  if p.p_position == p.l_position
+    G = p.position + c * (p.p_position - p.position)/2
+  else
+    G = p.position + c * (p.p_position + p.l_position - 2p.position)/3
+  end
+
+  # normally distributed random point in the hypersphere
+  radius = abs(G - p.position)
+  x = G + randn(length(p.position)) .* radius
+
+  # next timestep velocity and position
+  wvel = w * p.velocity
+  p.velocity = wvel + x - p.position
+  p.position = wvel + x
+
+  # enforce boundaries
+  p.velocity[p.position.<limits[:,1]] = -0.5 * p.velocity[p.position.<limits[:,1]]
+  p.velocity[p.position.>limits[:,2]] = -0.5 * p.velocity[p.position.>limits[:,2]]
+  p.position[p.position.<limits[:,1]] = limits[p.position.<limits[:,1], 1]
+  p.position[p.position.>limits[:,2]] = limits[p.position.>limits[:,2], 2]
+
 end
 
 function update(network::BitArray, K)
@@ -95,7 +119,7 @@ function pso(limits, fitness::Function, itermax = 100, n_particles = 40, K = 3)
       update(network, K)
     end
 
-    println([iter "\t" best_particle.p_fitness])
+    print([iter "\t" best_particle.p_fitness])
 
   end
   best_particle.p_position
