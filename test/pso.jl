@@ -1,5 +1,3 @@
-using Gadfly
-
 println("   * Run a pso, make sure the solution is within specified limits")
 limits = [[0:10:100] [10:10:110]]
 best = pso(limits, sum)
@@ -18,17 +16,11 @@ best = pso(limits, rosenbrock)
 
 println("   * Run multiple times, check for accuracy")
 limits = [[-10, -10] [10, 10]]
-avgs = zeros(100)
-for j=1:100
-  avg_fit = 0.0
-  for i=1:30
-    best = pso(limits, rosenbrock, j)
-    avg_fit += rosenbrock(best)
-  end
-  avgs[j] = avg_fit/30.0
+avg_fit = 0.0
+for i=1:30
+  best = pso(limits, rosenbrock)
+  avg_fit += rosenbrock(best)
 end
-draw(SVG("2006pso.svg", 6inch, 3inch),
-      plot(x=collect(1:100), y=avgs,
-                             Guide.XLabel("Step"), Guide.YLabel("Avg fit"))
-@assert(avg_fit >= -0.1)
-@assert(avg_fit <= 0.1)
+avg_fit = avg_fit/30.0
+@assert(avg_fit >= 0)
+@assert(avg_fit <= 1)

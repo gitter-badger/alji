@@ -45,10 +45,8 @@ function update(p::Particle, limits)
 
   # next timestep velocity and position
   wvel = w * p.velocity
-  #p.velocity = wvel + x - p.position
-  p.velocity = wvel+rand()*c*(p.p_position-p.position)+rand()*c*(p.l_position-p.position)
-  #p.position = wvel + x
-  p.position = p.position + p.velocity
+  p.velocity = wvel + x - p.position
+  p.position = wvel + x
 
   # enforce boundaries
   p.velocity[p.position.<limits[:,1]] = -0.5 * p.velocity[p.position.<limits[:,1]]
