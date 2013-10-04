@@ -45,8 +45,10 @@ function update(p::Particle, limits)
 
   # next timestep velocity and position
   wvel = w * p.velocity
-  p.velocity = wvel + x - p.position
-  p.position = wvel + x
+  #p.velocity = wvel + x - p.position
+  p.velocity = wvel+rand()*c*(p.p_position-p.position)+rand()*c*(p.l_position-p.position)
+  #p.position = wvel + x
+  p.position = p.position + p.velocity
 
   # enforce boundaries
   p.velocity[p.position.<limits[:,1]] = -0.5 * p.velocity[p.position.<limits[:,1]]
@@ -61,7 +63,7 @@ function update(network::BitArray, K)
   # update neighbors
   for i=1:size(network,1)
     for j=1:K
-      network[i, round(rand()*(size(network,2)-1))+1] = true
+      network[i, 1:size(network,2)] = true
     end
   end
   # self is always a neighbor
@@ -119,13 +121,6 @@ function pso(limits::Array, fitness::Function, itermax = 100, n_particles = 40, 
       update(network, K)
     end
 
-    print([iter "\t" best_particle.p_fitness])
-
   end
   best_particle.p_position
-end
-
-function pso(n::Real, fitness::Function, itermax = 100, n_particles = 40, K = 3)
-  limits = [[realmin(Float64) for i=1:n] [realmax(Float64) for i=1:n]]
-  pso(limits, fitness, itermax, n_particles, K)
 end
