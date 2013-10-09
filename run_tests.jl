@@ -1,6 +1,7 @@
 using Alji
 
-tests = ["test/pso.jl",]
+tests = ["test/gray.jl",
+         "test/pso.jl",]
 
 println("Running tests:")
 
