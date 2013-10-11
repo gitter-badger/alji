@@ -10,14 +10,14 @@ const p_crossover = 0.75;
 
 type Chromosome
   genes::BitArray
-  markers::Vector{Float64}
+  markers::Vector{Int64}
   fitness::Float64
 end
 
 function Chromosome(n::Int64)
   # n is the bit length of the chromosome
   genes = randbool(n)
-  markers = []
+  markers = [0,n]
   Chromosome(genes, markers, 0.0)
 end
 
@@ -52,7 +52,7 @@ function cross(p1::Chromosome, p2::Chromosome)
                    p1.markers[p1.markers .> cross_point]]
     c1_genes = [p1.genes[1:cross_point],
                  p2.genes[cross_point+1:length(p2.genes)]]
-    c1_genes = [p2.genes[1:cross_point],
+    c2_genes = [p2.genes[1:cross_point],
                  p1.genes[cross_point+1:length(p1.genes)]]
   else
     c1_markers = p1.markers
@@ -60,8 +60,8 @@ function cross(p1::Chromosome, p2::Chromosome)
     c1_genes = p1.genes
     c2_genes = p2.genes
   end
-  [Chromosome(c1_genes, c1_markers, 0.0),
-    Chromosome(c2_genes, c2_markers, 0.0)]
+  (Chromosome(c1_genes, c1_markers, 0.0),
+    Chromosome(c2_genes, c2_markers, 0.0))
 end
 
 function evaluate(chrom::Chromosome, fitness::Function)

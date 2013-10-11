@@ -1,11 +1,11 @@
-using Alji
-
-tests = ["test/gray.jl",
-         "test/pso.jl",]
+tests = ["ga.jl",
+         "gray.jl",
+         "pso.jl",]
 
 println("Running tests:")
 
 for test in tests
     println(" * $(test)")
-    include(test)
+    include("src/$test")
+    include("test/$test")
 end
