@@ -46,14 +46,14 @@ function cross(p1::Chromosome, p2::Chromosome)
     else
       cross_point = rand(1:min(length(p1),length(p2)))
     end
-    c1_markers = [p1.markers[p1.markers .<= cross_point],
-                   p2.markers[p2.markers .> cross_point]]
-    c2_markers = [p2.markers[p2.markers .<= cross_point],
+    c1_markers = [p2.markers[p2.markers .<= cross_point],
                    p1.markers[p1.markers .> cross_point]]
-    c1_genes = [p1.genes[1:cross_point],
-                 p2.genes[cross_point+1:length(p2.genes)]]
-    c2_genes = [p2.genes[1:cross_point],
+    c2_markers = [p1.markers[p1.markers .<= cross_point],
+                   p2.markers[p2.markers .> cross_point]]
+    c1_genes = [p2.genes[1:cross_point],
                  p1.genes[cross_point+1:length(p1.genes)]]
+    c2_genes = [p1.genes[1:cross_point],
+                 p2.genes[cross_point+1:length(p2.genes)]]
   else
     c1_markers = p1.markers
     c2_markers = p2.markers
@@ -66,4 +66,25 @@ end
 
 function evaluate(chrom::Chromosome, fitness::Function)
   chrom.fitness = fitness(chrom.genes)
+end
+
+function select(genome::Vector{Chromosome}, N::Int64)
+  # stochastic universal sampling
+  F = sum([chrom.fitness for chrom in genome])
+  points = F/N * (rand() + 0:N)
+  i = 1
+  total_fitness = genome[1].fitness
+  selection = []
+  for p in points
+    while total_fitness < p
+      i+=1
+      total_fitness += genome[i].fitness
+    end
+    selection = [genome[i], selection]
+    if i < length(genome)
+      i+=1
+      total_fitness += genome[i].fitness
+    end
+  end
+  return selection
 end
