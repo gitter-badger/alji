@@ -49,3 +49,10 @@ genome = [Chromosome(i) for i in rand(10:20,6)]
 selection = select(genome, 4)
 @assert(length(selection) == 4)
 [@assert(chrom in genome) for chrom in selection]
+
+println("   * Tournament selection")
+genome = [Chromosome(i) for i in rand(10:20,10)]
+[chrom.fitness = rand() for chrom in genome]
+selection = select(genome, 3, 3)
+@assert(length(selection) == 3)
+[@assert(chrom in genome) for chrom in selection]

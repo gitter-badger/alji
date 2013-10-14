@@ -86,5 +86,28 @@ function select(genome::Vector{Chromosome}, N::Int64)
       total_fitness += genome[i].fitness
     end
   end
-  return selection
+  selection
+end
+
+function select(genome::Vector{Chromosome}, N::Int64, T::Int64)
+  # tournament selection
+  selection = []
+  genome = genome[randperm(length(genome))]
+  if (N * T) > length(genome) # don't choose bad T
+    T = floor(length(genome)/N)
+  end
+  winner_fit = -1
+  for i=1:(N*T)
+    if i % T == 1
+      winner_fit = -1
+    end
+    if genome[i].fitness > winner_fit
+      winner = genome[i]
+      winner_fit = winner.fitness
+    end
+    if i % T == 0
+      selection = [winner, selection]
+    end
+  end
+  selection
 end
