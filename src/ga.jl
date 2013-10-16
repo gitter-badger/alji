@@ -33,8 +33,9 @@ end
 
 function mutate(chrom::Chromosome)
   # bit string manipulation
-  mutate = rand(length(chrom))
+  chance = rand(length(chrom.genes))
   chrom.genes[chance .< p_mutation] = ~chrom.genes[chance .< p_mutation]
+  chrom
 end
 
 function cross(p1::Chromosome, p2::Chromosome)

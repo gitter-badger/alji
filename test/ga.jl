@@ -10,6 +10,12 @@ chrom2 = Chromosome([3,2,4,1])
 @assert(chrom2.markers==[0,3,5,9,10])
 @assert(chrom2.fitness==0)
 
+println("   * Mutate a chromosome")
+chrom = Chromosome(10000)
+genes1 = deepcopy(chrom.genes)
+mutate(chrom)
+@assert(genes1 != chrom.genes)
+
 println("   * Crossover similar chromosomes")
 chrom1 = Chromosome([3,2,4,1])
 while (chrom1 == chrom2)
