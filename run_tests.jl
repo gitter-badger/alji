@@ -1,6 +1,7 @@
-tests = ["ga.jl",
-         "gray.jl",
-         "pso.jl",]
+tests = ["chromosome.jl",
+         "ga.jl"]
+#         "gray.jl",
+#         "pso.jl",]
 
 println("Running tests:")
 

@@ -5,105 +5,55 @@
 #
 # Copyright Dennis Wilson 2013, under the GPL (see alji for version)
 
-const p_mutation = 0.05;
-const p_crossover = 0.75;
-
-type Chromosome
-  genes::BitArray
-  markers::Vector{Int64}
+type Individual
+  genome::Vector{Chromosome}
   fitness::Float64
 end
 
-function Chromosome(n::Int64)
-  # n is the bit length of the chromosome
-  genes = randbool(n)
-  markers = [0,n]
-  Chromosome(genes, markers, 0.0)
-end
-
-function Chromosome(lengths::Vector{Int64})
-  # lengths is a vector of gene bit lengths
-  genes = randbool(sum(lengths));
-  markers = zeros(Int64,length(lengths)+1);
-  for i=1:length(lengths)
-    markers[i+1]=markers[i]+lengths[i]
+function Individual(genome::Vector{Chromosome})
+  # new random individual based on genome
+  new_genome = []
+  for chrom in genome
+    new_genome = [new_genome, Chromosome(chrom.markers)]
   end
-  Chromosome(genes, markers, 0.0)
+  Individual(new_genome, 0.0)
 end
 
-function mutate(chrom::Chromosome)
-  # bit string manipulation
-  chance = rand(length(chrom.genes))
-  chrom.genes[chance .< p_mutation] = ~chrom.genes[chance .< p_mutation]
-  chrom
-end
-
-function cross(p1::Chromosome, p2::Chromosome)
-  # single-point crossover of two arbitratry chromosomes
-  if rand() < p_crossover
-    c_markers = intersect(p1.markers, p2.markers)
-    if (length(c_markers) > 0)
-      cross_point = c_markers[rand(1:length(c_markers))]
-    else
-      cross_point = rand(1:min(length(p1),length(p2)))
-    end
-    c1_markers = [p2.markers[p2.markers .<= cross_point],
-                   p1.markers[p1.markers .> cross_point]]
-    c2_markers = [p1.markers[p1.markers .<= cross_point],
-                   p2.markers[p2.markers .> cross_point]]
-    c1_genes = [p2.genes[1:cross_point],
-                 p1.genes[cross_point+1:length(p1.genes)]]
-    c2_genes = [p1.genes[1:cross_point],
-                 p2.genes[cross_point+1:length(p2.genes)]]
-  else
-    c1_markers = p1.markers
-    c2_markers = p2.markers
-    c1_genes = p1.genes
-    c2_genes = p2.genes
-  end
-  (Chromosome(c1_genes, c1_markers, 0.0),
-    Chromosome(c2_genes, c2_markers, 0.0))
-end
-
-function evaluate(chrom::Chromosome, fitness::Function)
-  chrom.fitness = fitness(chrom.genes)
-end
-
-function select(genome::Vector{Chromosome}, N::Int64)
+function select(pop::Vector{Individual}, N::Int64)
   # stochastic universal sampling
-  F = sum([chrom.fitness for chrom in genome])
+  F = sum([ind.fitness for ind in pop])
   points = F/N * (rand() + 0:N)
   i = 1
-  total_fitness = genome[1].fitness
+  total_fitness = pop[1].fitness
   selection = []
   for p in points
     while total_fitness < p
       i+=1
-      total_fitness += genome[i].fitness
+      total_fitness += pop[i].fitness
     end
-    selection = [genome[i], selection]
-    if i < length(genome)
+    selection = [pop[i], selection]
+    if i < length(pop)
       i+=1
-      total_fitness += genome[i].fitness
+      total_fitness += pop[i].fitness
     end
   end
   selection
 end
 
-function select(genome::Vector{Chromosome}, N::Int64, T::Int64)
+function select(pop::Vector{Individual}, N::Int64, T::Int64)
   # tournament selection
   selection = []
-  genome = genome[randperm(length(genome))]
-  if (N * T) > length(genome) # don't choose bad T
-    T = floor(length(genome)/N)
+  pop = pop[randperm(length(pop))]
+  if (N * T) > length(pop) # don't choose bad T
+    T = floor(length(pop)/N)
   end
   winner_fit = -1
   for i=1:(N*T)
     if i % T == 1
       winner_fit = -1
     end
-    if genome[i].fitness > winner_fit
-      winner = genome[i]
+    if pop[i].fitness > winner_fit
+      winner = pop[i]
       winner_fit = winner.fitness
     end
     if i % T == 0
@@ -111,4 +61,12 @@ function select(genome::Vector{Chromosome}, N::Int64, T::Int64)
     end
   end
   selection
+end
+
+function ga(genome::Vector{Chromosome}, fitness::Function,
+                                        P::Int64=200, N::Int64=20, T::Int64=3)
+  # main ga
+
+  # make initial population
+
 end
