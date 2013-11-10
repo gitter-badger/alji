@@ -19,6 +19,23 @@ function Individual(genome::Vector{Chromosome})
   Individual(new_genome, 0.0)
 end
 
+function mutate(ind::Individual)
+  for chrom in ind.genome
+    mutate(chrom)
+  end
+end
+
+function cross(ind1::Individual, ind2::Individual)
+  child1_genome = []
+  child2_genome = []
+  for i=1:min(length(ind1.genome),length(ind2.genome))
+    (chrom1, chrom2) = cross(ind1.genome[i],ind2.genome[i])
+    child1_genome = [child1_genome, chrom1]
+    child2_genome = [child2_genome, chrom2]
+  end
+  (Individual(child1_genome, 0.0), Individual(child2_genome, 0.0))
+end
+
 function select(pop::Vector{Individual}, N::Int64)
   # stochastic universal sampling
   F = sum([ind.fitness for ind in pop])
