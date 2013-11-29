@@ -85,5 +85,44 @@ function ga(genome::Vector{Chromosome}, fitness::Function,
   # main ga
 
   # make initial population
+  pop = []
+  for i=1:P
+    pop = [pop, Individual(genome)]
+  end
 
+  i = 0
+  best = deepcopy(pop[i])
+  while (best.fit < 1 & i < 100)  # use kw args to provide
+
+    # evaluate population
+    for ind in pop
+      ind.fitness = fitness(ind.genome)
+    end
+
+    # select fit subpopulation
+    selection = select(ind, N, T)
+
+    # find global best individual
+    for ind in selection
+      if ind.fit > best.fit
+        best = deepcopy(ind)
+      end
+    end
+
+    # eletism - pass on subpopulation
+    pop = selection
+
+    # cross subpopulation
+    for j=1:P/N
+      selection = selection[randperm(length(selection))]
+      for k=1:length(selection)/2
+        (c1, c2) = cross(selection[k], selection[k+1])
+        pop = [pop, c1, c2]
+      end
+    end
+
+    pop = pop[randperm(P)]
+  end
+
+  (best.genome, best.fitness)
 end
