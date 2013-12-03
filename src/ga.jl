@@ -16,7 +16,7 @@ function Individual(genome::Vector{Chromosome})
   for chrom in genome
     new_genome = [new_genome, Chromosome(chrom.markers)]
   end
-  Individual(new_genome, 0.0)
+  Individual(new_genome, -Inf)
 end
 
 function mutate(ind::Individual)
@@ -33,7 +33,7 @@ function cross(ind1::Individual, ind2::Individual)
     child1_genome = [child1_genome, chrom1]
     child2_genome = [child2_genome, chrom2]
   end
-  (Individual(child1_genome, 0.0), Individual(child2_genome, 0.0))
+  (Individual(child1_genome, -Inf), Individual(child2_genome, -Inf))
 end
 
 function select(pop::Vector{Individual}, N::Int64)
@@ -64,10 +64,10 @@ function select(pop::Vector{Individual}, N::Int64, T::Int64)
   if (N * T) > length(pop) # don't choose bad T
     T = floor(length(pop)/N)
   end
-  winner_fit = -1
+  winner_fit = -Inf
   for i=1:(N*T)
     if i % T == 1
-      winner_fit = -1
+      winner_fit = -Inf
     end
     if pop[i].fitness > winner_fit
       winner = pop[i]
@@ -91,8 +91,8 @@ function ga(genome::Vector{Chromosome}, fitness::Function,
   end
 
   i = 0
-  best = deepcopy(pop[i])
-  while (best.fit < 1 & i < 100)  # use kw args to provide
+  best = deepcopy(pop[1])
+  while (i < 100)  # TODO: use kw args to provide
 
     # evaluate population
     for ind in pop
@@ -100,11 +100,11 @@ function ga(genome::Vector{Chromosome}, fitness::Function,
     end
 
     # select fit subpopulation
-    selection = select(ind, N, T)
+    selection = select(pop, N, T)
 
     # find global best individual
     for ind in selection
-      if ind.fit > best.fit
+      if ind.fitness > best.fitness
         best = deepcopy(ind)
       end
     end
@@ -122,6 +122,7 @@ function ga(genome::Vector{Chromosome}, fitness::Function,
     end
 
     pop = pop[randperm(P)]
+    i += 1
   end
 
   (best.genome, best.fitness)

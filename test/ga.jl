@@ -1,9 +1,11 @@
+include("../src/gray.jl")
+
 println("  * Create an individual")
 genome = [Chromosome(i) for i in rand(10:20,6)]
 ind1 = Individual(genome)
 @assert(ind1.genome != genome)
 [@assert(ind1.genome[i].markers == genome[i].markers) for i=1:length(genome)]
-@assert(ind1.fitness == 0.0)
+@assert(ind1.fitness == -Inf)
 
 println("   * Mutate an individual")
 ind2 = deepcopy(ind1)
@@ -31,3 +33,15 @@ pop = [Individual(genome) for i=1:10]
 selection = select(pop, 3, 3)
 @assert(length(selection) == 3)
 [@assert(ind in pop) for ind in selection]
+
+println("   * Run the GA")
+function rosenbrock(genome::Vector{Chromosome})
+    x = [bintoint(genome[1].genes),
+         bintoint(genome[2].genes)]
+    return -((1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2)
+end
+
+# two 8 bit ints
+genome = [Chromosome(8), Chromosome(8)]
+(bestgenome, bestfit) = ga(genome, rosenbrock)
+println(bestfit)
