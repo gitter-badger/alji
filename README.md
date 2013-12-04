@@ -40,3 +40,26 @@ best = pso([zeros(10), ones(10)], sum, 1000)
 ```
 would search for the smallest sum of 10 floats between zero and one, and would
 run for 1000 iterations with 40 particles and 3 particles per neighbor.
+
+GA
+---
+
+ga.jl uses the Chromosome class from chromosome.jl, which are bit arrays with
+region markers. Methods to work with Gray codes are provided in gray.jl. The GA
+uses tournament selection, though stochastic universal sampling is also
+implemented. Elitism is used to pass the best subpopulation on each iteration.
+
+The GA is exported as a function and is called like
+```julia
+using Alji
+genome = [Chromosome(i) for i in repmat([4],6)]
+function sum(genome::Vector{Chromosome})
+    sum([bintoint(chrom.genes) for chrom in genome])
+end
+(bestgenome, bestfit) = ga(genome, sum)
+```
+
+This sample fitness function sums the integer representation of 6 different
+4-bit bitstrings, as provided to the ga function in genome. The ga returns the
+best genome, containing the best bitstrings, and the fitness associated with
+that genome.
