@@ -1,6 +1,8 @@
 alji
 ====
 
+[![Join the chat at https://gitter.im/d9w/alji](https://badges.gitter.im/d9w/alji.svg)](https://gitter.im/d9w/alji?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Artificial Life: a Julia Implementation
 
 I research artificial life and recently became infatuated with
